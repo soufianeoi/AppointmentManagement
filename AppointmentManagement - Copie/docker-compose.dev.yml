@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # SQL Server Database for Development
+  appointmentdb-dev:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: appointmentmanagement-db-dev
+    env_file:
+      - ./environments/.env.development
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=SA_DevAdmin2024!
+      - MSSQL_PID=Express
+    ports:
+      - "1434:1433"  # Different port to avoid conflicts
+    volumes:
+      - appointmentdb_dev_data:/var/opt/mssql
+    networks:
+      - appointmentnetwork-dev
+    restart: unless-stopped
+
+  # Application API for Development
+  appointmentapi-dev:
+    build:
+      context: .
+      dockerfile: WebApplication6/Dockerfile
+      target: base
+    container_name: appointmentmanagement-api-dev
+    env_file:
+      - ./environments/.env.development
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=${DB_SERVER},${DB_PORT};Database=${DB_NAME};User Id=${DB_USER};Password=${DB_PASSWORD};TrustServerCertificate=${DB_TRUST_SERVER_CERTIFICATE};MultipleActiveResultSets=${DB_MULTIPLE_ACTIVE_RESULT_SETS}
+    ports:
+      - "5000:8080"
+    volumes:
+      - .:/src
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+      - ~/.aspnet/https:/root/.aspnet/https:ro
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+    depends_on:
+      appointmentdb-dev:
+        condition: service_healthy
+    networks:
+      - appointmentnetwork-dev
+    restart: unless-stopped
+
+  # MailHog for email testing in development
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: appointmentmanagement-mailhog
+    ports:
+      - "8025:8025"  # Web UI
+      - "1025:1025"  # SMTP
+    networks:
+      - appointmentnetwork-dev
+    restart: unless-stopped
+
+  # Redis for caching (optional)
+  redis-dev:
+    image: redis:7-alpine
+    container_name: appointmentmanagement-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - appointmentnetwork-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+volumes:
+  appointmentdb_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  appointmentnetwork-dev:
+    driver: bridge

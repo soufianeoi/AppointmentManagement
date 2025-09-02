@@ -1,0 +1,30 @@
+# Development Dockerfile with hot reload
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+WORKDIR /app
+
+# Install development tools
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Copy project files for restore
+COPY AppointmentManagement.Domain/*.csproj AppointmentManagement.Domain/
+COPY AppointmentManagement.Application/*.csproj AppointmentManagement.Application/
+COPY AppointmentManagement.Infrastructure/*.csproj AppointmentManagement.Infrastructure/
+COPY WebApplication6/*.csproj WebApplication6/
+
+# Restore dependencies
+RUN dotnet restore WebApplication6/AppointmentManagement.Api.csproj
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 8080
+
+# Set environment
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Development
+
+# Use dotnet watch for hot reload
+WORKDIR /app/WebApplication6
+CMD ["dotnet", "watch", "run", "--project", "AppointmentManagement.Api.csproj", "--no-restore"]

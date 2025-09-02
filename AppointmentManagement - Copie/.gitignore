@@ -1,0 +1,100 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+.vscode/
+
+# Environment files (SECURITY: Never commit real environment files)
+environments/.env.local
+environments/.env.development
+environments/.env.production
+environments/.env.testing
+environments/.env.staging
+.env
+.env.local
+.env.development
+.env.production
+
+# Keep only the template
+!environments/.env.template
+
+# Docker
+.dockerignore
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+*.db
+*.sqlite3
+
+# Certificates and Keys
+*.pfx
+*.p12
+*.key
+*.pem
+*.crt
+ssl/
+certificates/
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary files
+*.tmp
+*.temp
+~$*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Node.js (if adding frontend)
+node_modules/
+package-lock.json
+yarn.lock
+
+# JetBrains
+.idea/
+
+# ReSharper
+_ReSharper*/
+
+# Test results
+TestResults/
+coverage/
+*.trx
+*.coverage
+
+# Nuget
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# Entity Framework
+Migrations/
+
+# User secrets
+secrets.json

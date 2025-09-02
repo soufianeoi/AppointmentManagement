@@ -1,0 +1,36 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: appointmentmanagement-sqlserver
+    ports:
+      - "${DB_PORT}:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - appointmentmanagement-network
+    env_file:
+      - ./environment/.env
+
+  appointmentmanagement.api:
+    image: ${DOCKER_REGISTRY-}appointmentmanagementapi
+    container_name: appointmentmanagement-api
+    build:
+      context: .
+      dockerfile: AppointmentManagement.Api/Dockerfile
+    ports:
+      - "${API_PORT}:8080"
+      - "${API_HTTPS_PORT}:8081"
+    depends_on:
+      - sqlserver
+    networks:
+      - appointmentmanagement-network
+    env_file:
+      - ./environment/.env
+
+volumes:
+  sqlserver_data:
+    driver: local
+
+networks:
+  appointmentmanagement-network:
+    driver: bridge
